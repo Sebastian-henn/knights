@@ -5,6 +5,7 @@ Cast:
     Knight - the knights of the round table, lured by a beacon
 
 '''
+from math import atan2, cos, pi, sin, sqrt
 import random
 
 class Knight():
@@ -16,16 +17,16 @@ class Knight():
         row : within MAXROWS
         col : within MAXCOLS
         name : a string
+        speed : distance a knight can move in one iteration
     '''
-    def __init__(self, limits, name):
-        self.row = random.randint(0, limits[1]-1)
+    def __init__(self, limits, name, speed):
+        self.row = random.randint(0, limits[0]-1)
         self.col = random.randint(0, limits[1]-1)
+        self.speed = speed
         self.name = name
         self.captured = False
         self.felloff = False
 
-
-       
 
        
     
@@ -50,8 +51,17 @@ class Knight():
         limits - the boundaries of the "world"
         '''
         chosenBeacon = beacons[0] # could have multiple beacons...
-        self.row -= 20
-        self.col -= 30
+        beaconRow = chosenBeacon[0]
+        beaconCol = chosenBeacon[1]
+        
+        dy = self.row - beaconRow
+        dx = self.col - beaconCol
+        distanceToBeacon = sqrt(dy*dy + dx*dx)
+        angleToBeacon = atan2(dy, dx)
+        speed = min(self.speed, distanceToBeacon)
+
+        self.row -= speed * sin(angleToBeacon)
+        self.col -= speed * cos(angleToBeacon)
 
     def runaway(self, beacons, limits):
         '''
@@ -61,6 +71,23 @@ class Knight():
         limits - the boundaries of the "world"
         '''
         chosenBeacon = beacons[0]
-        self.row += 20
-        self.col += 30
+        beaconRow = chosenBeacon[0]
+        beaconCol = chosenBeacon[1]
+
+        dy = self.row - beaconRow
+        dx = self.col - beaconCol
+        distanceToBeacon = sqrt(dy*dy + dx*dx)
+        angleToBeacon = atan2(dy, dx)
+        speed = self.speed
+
+        if (distanceToBeacon > speed):
+            angleToRun = angleToBeacon
+        else:
+            angleToRun = random.randint(0, 359) * pi / 180
+
+        self.row += speed * sin(angleToRun)
+        self.col += speed * cos(angleToRun)
+        self.row = max(min(self.row, limits[0]), 0)
+        self.col = max(min(self.col, limits[1]), 0)
+
 

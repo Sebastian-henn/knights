@@ -32,8 +32,8 @@ def plot_knight_scatter(knights, limits):
     slist = []
     clist = []
     for k in range(len(knights)):
-        ylist.append(limits[0] - knights[k].getRow() - 1)  
-        xlist.append(knights[k].getCol()) #flip rows/columns to y/x
+        ylist.append(knights[k].getRow())  
+        xlist.append(knights[k].getCol())
         slist.append(40)
         clist.append(k)
         plt.scatter(xlist,ylist,s=slist,c=clist)
@@ -52,7 +52,7 @@ def main():
 
 
     for i in range(numKnights):  # add knight objects to grid
-        knightList.append(Knight([MAXROWS, MAXCOLS], knightNames[i]))
+        knightList.append(Knight(limits, knightNames[i], 3))
 
 
     # Simulation
@@ -60,11 +60,26 @@ def main():
     for t in range(10):
         print("### Timestep ", t, "###")
         for i in range(numKnights):
-            knightList[i].lure(beacons, [1,1])
+            knightList[i].lure(beacons, limits)
         
         plot_knight_scatter(knightList, limits)
         plot_feature_scatter(beacons, "yellow", limits)
-        plt.title("Beacon Simulation")
+        plt.title("Beacon Simulation - Luring")
+        plt.xlabel("Columns")
+        plt.ylabel("Rows")
+        plt.xlim(-1,MAXCOLS)
+        plt.ylim(-1,MAXROWS)
+        plt.pause(1)
+        plt.clf()
+
+    for t in range(10):
+        print("### Timestep ", t + 10, "###")
+        for i in range(numKnights):
+            knightList[i].runaway(beacons, limits)
+        
+        plot_knight_scatter(knightList, limits)
+        plot_feature_scatter(beacons, "yellow", limits)
+        plt.title("Beacon Simulation - Luring")
         plt.xlabel("Columns")
         plt.ylabel("Rows")
         plt.xlim(-1,MAXCOLS)
